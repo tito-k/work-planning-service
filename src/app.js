@@ -5,11 +5,14 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import routes from "./route/index.js";
+import connectToDatabase from "./config/database.js";
 import errorHandler from "./middleware/errorHandler.js";
 
 config();
 
 const app = express();
+
+connectToDatabase();
 
 app.use(compression());
 app.use(cors());
