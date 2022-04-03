@@ -153,7 +153,7 @@ export default {
       .then((shift) => {
         return response.status(200).json({
           status: "ok",
-          message: "Successfully assigned shift to worker",
+          message: "Successfully assigned shift to worker.",
           data: shift,
         });
       });
