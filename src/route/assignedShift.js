@@ -11,16 +11,24 @@ const {
   getOneWorkerAssignedShift,
 } = assignedShiftController;
 
-const { assignShiftSchema } = schemas;
+const {
+  assignShiftSchema,
+  getAssignedShiftSchema,
+  getWorkerAssignedShiftSchema,
+} = schemas;
 
 const router = Router();
 
 router.post("/", validator(assignShiftSchema), asyncWrapper(assignShift));
 
-router.get("/", getAllAssignedShift);
+router.get("/", validator(getAssignedShiftSchema), getAllAssignedShift);
 
 router.get("/:id", getOneAssignedShift);
 
-router.get("/worker/:email", getOneWorkerAssignedShift);
+router.get(
+  "/worker/:email",
+  validator(getWorkerAssignedShiftSchema),
+  getOneWorkerAssignedShift
+);
 
 export default router;

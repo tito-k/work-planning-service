@@ -7,7 +7,7 @@ import validator from "../middleware/validator.js";
 const { createWorker, getAllWorkers, getWorker, updateWorker, deleteWorker } =
   workerController;
 
-const { createWorkerSchema } = schemas;
+const { createWorkerSchema, updateWorkerSchema } = schemas;
 
 const router = Router();
 
@@ -17,7 +17,7 @@ router.get("/", asyncWrapper(getAllWorkers));
 
 router.get("/:id", asyncWrapper(getWorker));
 
-router.patch("/:id", asyncWrapper(updateWorker));
+router.patch("/:id", validator(updateWorkerSchema), asyncWrapper(updateWorker));
 
 router.delete("/:id", asyncWrapper(deleteWorker));
 
