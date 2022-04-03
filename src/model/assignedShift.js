@@ -12,7 +12,7 @@ const AssignedShiftSchema = new Schema(
     shift: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "Worker",
+      ref: "Shift",
     },
     date: {
       type: Date,
@@ -32,6 +32,34 @@ const AssignedShiftSchema = new Schema(
     timestamps: true,
   }
 );
+
+AssignedShiftSchema.pre("save", async function (next) {
+  const currentStartTime = new Date();
+  const currentEndTime = new Date();
+
+  currentStartTime.setHours(
+    this.startTime.split(":")[0],
+    this.startTime.split(":")[1],
+    0
+  );
+
+  currentEndTime.setHours(
+    this.endTime.split(":")[0],
+    this.endTime.split(":")[1],
+    0
+  );
+
+  this.startTime = currentStartTime;
+  this.endTime = currentEndTime;
+
+  next();
+});
+
+AssignedShiftSchema.set("toJSON", {
+  transform: function (doc, ret, options) {
+    delete ret.__v;
+  },
+});
 
 const assignedShift = mongoose.model("AssignedShift", AssignedShiftSchema);
 export default assignedShift;

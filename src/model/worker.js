@@ -38,5 +38,11 @@ const WorkerSchema = new Schema(
   }
 );
 
+WorkerSchema.set("toJSON", {
+  transform: function (doc, ret, options) {
+    delete ret.__v;
+  },
+});
+
 const worker = mongoose.model("Worker", WorkerSchema);
 export default worker;
