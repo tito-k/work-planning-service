@@ -7,6 +7,7 @@ const ShiftSchema = new Schema(
     day: {
       type: String,
       required: true,
+      unique: true,
       enum: [
         "sunday",
         "monday",
@@ -27,10 +28,12 @@ const ShiftSchema = new Schema(
     startTime: {
       type: String,
       required: true,
+      default: "00:00",
     },
     endTime: {
       type: String,
       required: true,
+      default: "23:59",
     },
   },
   {
@@ -62,8 +65,18 @@ ShiftSchema.pre("save", async function (next) {
 
 ShiftSchema.set("toJSON", {
   transform: function (doc, ret, options) {
+    let startTime = ret.startTime;
+    let endTime = ret.endTime;
+
     delete ret._id;
+    delete ret.startTime;
+    delete ret.endTime;
     delete ret.__v;
+    delete ret.createdAt;
+    delete ret.updatedAt;
+
+    ret.startTime = new Date(startTime).toLocaleTimeString();
+    ret.endTime = new Date(endTime).toLocaleTimeString();
   },
 });
 

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const { Schema } = mongoose;
 
@@ -40,9 +41,12 @@ const WorkerSchema = new Schema(
 
 WorkerSchema.set("toJSON", {
   transform: function (doc, ret, options) {
+    delete ret.createdAt;
+    delete ret.updatedAt;
     delete ret.__v;
   },
 });
 
+WorkerSchema.plugin(mongoosePaginate);
 const worker = mongoose.model("Worker", WorkerSchema);
 export default worker;

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const { Schema } = mongoose;
 
@@ -57,9 +58,23 @@ AssignedShiftSchema.pre("save", async function (next) {
 
 AssignedShiftSchema.set("toJSON", {
   transform: function (doc, ret, options) {
+    let startTime = ret.startTime;
+    let endTime = ret.endTime;
+    let date = ret.date;
+
+    delete ret.shift;
+    delete ret.startTime;
+    delete ret.endTime;
+    delete ret.createdAt;
+    delete ret.updatedAt;
     delete ret.__v;
+
+    ret.startTime = new Date(startTime).toLocaleTimeString();
+    ret.endTime = new Date(endTime).toLocaleTimeString();
+    ret.date = new Date(date).toLocaleDateString("sv-SE");
   },
 });
 
+AssignedShiftSchema.plugin(mongoosePaginate);
 const assignedShift = mongoose.model("AssignedShift", AssignedShiftSchema);
 export default assignedShift;
