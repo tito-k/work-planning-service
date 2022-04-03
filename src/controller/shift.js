@@ -14,6 +14,24 @@ export default {
       });
     }
 
+    const currentStartTime = new Date();
+    const currentEndTime = new Date();
+
+    currentStartTime.setHours(
+      startTime.split(":")[0],
+      startTime.split(":")[1],
+      0
+    );
+
+    currentEndTime.setHours(endTime.split(":")[0], endTime.split(":")[1], 0);
+
+    if (currentStartTime >= currentEndTime) {
+      return response.status(409).json({
+        status: "conflict",
+        message: "End time cannot be less than or equal to start time.",
+      });
+    }
+
     await Shift.create({ day, hours, startTime, endTime }).then((shift) => {
       return response.status(201).json({
         status: "created",

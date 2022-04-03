@@ -136,26 +136,32 @@ export default {
     ) {
       return response.status(404).json({
         status: "not found",
-        message: "There is no available shift for this date.",
+        message: "There are no available shifts for this date.",
       });
     }
 
-    AssignedShift.create({
+    const newShift = await AssignedShift.create({
       worker: worker._id,
       shift: shift._id,
       date: date,
       startTime: availableStartTime[0],
       endTime: availableEndTime[0],
-    }).then((shift) => {
-      return response.status(200).json({
-        status: "ok",
-        message: "Successfully assigned shift to worker",
-        data: shift,
-      });
     });
+
+    AssignedShift.findOne({ _id: newShift._id }, { shift: 0 })
+      .populate("worker")
+      .then((shift) => {
+        return response.status(200).json({
+          status: "ok",
+          message: "Successfully assigned shift to worker",
+          data: shift,
+        });
+      });
   },
 
   getAllAssignedShift: async (request, response) => {
+    const limit = request.query.limit ? Number(request.query.limit) : 15;
+    const offset = request.query.offset ? Number(request.query.offset) : 0;
     const { date } = request.query;
 
     const shiftToFind = {};
@@ -164,18 +170,28 @@ export default {
       shiftToFind.date = date;
     }
 
-    const assignedShifts = await AssignedShift.find(shiftToFind);
+    const assignedShifts = await AssignedShift.paginate(shiftToFind, {
+      limit,
+      offset,
+      populate: "worker",
+      sort: { createdAt: -1 },
+    });
 
     return response.status(200).json({
       status: "ok",
-      data: assignedShifts,
+      data: {
+        result: assignedShifts.docs,
+        totalCount: assignedShifts.totalDocs,
+      },
     });
   },
 
   getOneAssignedShift: async (request, response) => {
     const { id } = request.params;
 
-    const assignedShift = await AssignedShift.findOne({ _id: id });
+    const assignedShift = await AssignedShift.findOne({ _id: id }).populate(
+      "worker"
+    );
 
     if (!assignedShift) {
       return response.status(404).json({
@@ -191,6 +207,8 @@ export default {
   },
 
   getOneWorkerAssignedShift: async (request, response) => {
+    const limit = request.query.limit ? Number(request.query.limit) : 15;
+    const offset = request.query.offset ? Number(request.query.offset) : 0;
     const { email } = request.params;
     const { date } = request.query;
 
@@ -211,11 +229,19 @@ export default {
       shiftToFind.date = date;
     }
 
-    const workerAssignedShifts = await AssignedShift.find(shiftToFind);
+    const workerAssignedShifts = await AssignedShift.paginate(shiftToFind, {
+      limit,
+      offset,
+      populate: "worker",
+      sort: { createdAt: -1 },
+    });
 
     return response.status(200).json({
       status: "ok",
-      data: workerAssignedShifts,
+      data: {
+        result: workerAssignedShifts.docs,
+        totalCount: workerAssignedShifts.totalDocs,
+      },
     });
   },
 };

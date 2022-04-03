@@ -40,18 +40,27 @@ export default {
   },
 
   getAllWorkers: async (request, response) => {
-    const workers = await Worker.find({});
+    const limit = request.query.limit ? Number(request.query.limit) : 15;
+    const offset = request.query.offset ? Number(request.query.offset) : 0;
+
+    const workers = await Worker.paginate(
+      {},
+      { limit, offset, sort: { createdAt: -1 } }
+    );
 
     return response.status(200).json({
       status: "ok",
-      data: workers,
+      data: {
+        result: workers.docs,
+        totalCount: workers.totalDocs,
+      },
     });
   },
 
   getWorker: async (request, response) => {
     const { id } = request.params;
 
-    const worker = await WorkerSchema.findOne({ _id: id });
+    const worker = await Worker.findOne({ _id: id });
 
     if (!worker) {
       return response.status(404).json({
