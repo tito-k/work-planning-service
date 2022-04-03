@@ -37,6 +37,7 @@
     "helmet": "^5.0.2",
     "http": "^0.0.1-security",
     "mongoose": "^6.2.9",
+    "mongoose-paginate-v2": "^1.6.3",
     "morgan": "^1.10.0",
     "q": "^1.5.1"
   }
